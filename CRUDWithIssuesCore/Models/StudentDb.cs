@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +8,11 @@ namespace CRUDWithIssuesCore.Models
 {
     public static class StudentDb
     {
-        public static Student Add(Student p, SchoolContext db)
+        public static Student Add(Student p, SchoolContext context)
         {
             //Add student to context
-            db.Students.Add(p);
+            context.Students.Add(p);
+            context.SaveChanges();
             return p;
         }
 
@@ -20,27 +22,31 @@ namespace CRUDWithIssuesCore.Models
                     select s).ToList();
         }
 
-        public static Student GetStudent(SchoolContext context, int id)
+        public static Student GetStudentId(SchoolContext context, int id)
         {
             Student p2 = context
                             .Students
-                            .Where(s => s.StudentId == id)
-                            .Single();
+                            .Where(stu => stu.StudentId == id)
+                            .SingleOrDefault();
             return p2;
         }
 
-        public static void Delete(SchoolContext context, Student p)
-        {
-            context.Students.Update(p);
-        }
-
-        public static void Update(SchoolContext context, Student p)
-        {
+        public static void Delete(SchoolContext context, Student stu)
+        { 
             //Mark the object as deleted
-            context.Students.Remove(p);
+            context.Remove(stu);
 
             //Send delete query to database
             context.SaveChanges();
+        }
+
+        public static Student Update(SchoolContext context, Student stu)
+        {
+            context.Entry(stu).State = EntityState.Modified;
+
+            context.SaveChanges();
+
+            return stu;
         }
     }
 }

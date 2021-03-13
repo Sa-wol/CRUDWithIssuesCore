@@ -18,8 +18,8 @@ namespace CRUDWithIssuesCore.Controllers
 
         public IActionResult Index()
         {
-            List<Student> products = StudentDb.GetStudents(context);
-            return View();
+            List<Student> stu = StudentDb.GetStudents(context);
+            return View(stu);
         }
 
         public IActionResult Create()
@@ -28,44 +28,45 @@ namespace CRUDWithIssuesCore.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Student p)
+        public IActionResult Create(Student stu)
         {
             if (ModelState.IsValid)
             {
-                StudentDb.Add(p, context);
-                ViewData["Message"] = $"{p.Name} was added!";
-                return View();
+                StudentDb.Add(stu, context);
+                ViewData["Message"] = $"{stu.Name} was added!";
+                return RedirectToAction(nameof(Index));
             }
 
             //Show web page with errors
-            return View(p);
+            return View(stu);
         }
 
         public IActionResult Edit(int id)
         {
             //get the product by id
-            Student p = StudentDb.GetStudent(context, id);
+            Student stu = StudentDb.GetStudentId(context, id);
 
             //show it on web page
-            return View();
+            return View(stu);
         }
 
         [HttpPost]
-        public IActionResult Edit(Student p)
+        public IActionResult Edit(Student stu)
         {
             if (ModelState.IsValid)
             {
-                StudentDb.Update(context, p);
+                StudentDb.Update(context, stu);
                 ViewData["Message"] = "Product Updated!";
-                return View(p);
+                return RedirectToAction(nameof(Index));
             }
             //return view with errors
-            return View(p);
+            return View(stu);
         }
 
         public IActionResult Delete(int id)
         {
-            Student p = StudentDb.GetStudent(context, id);
+            Student p = StudentDb.GetStudentId(context, id);
+
             return View(p);
         }
 
@@ -73,7 +74,7 @@ namespace CRUDWithIssuesCore.Controllers
         public IActionResult DeleteConfirm(int id)
         {
             //Get Product from database
-            Student p = StudentDb.GetStudent(context, id);
+            Student p = StudentDb.GetStudentId(context, id);
 
             StudentDb.Delete(context, p);
 
